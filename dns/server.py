@@ -142,22 +142,34 @@ class LocalResolver(BaseResolver):
         return reply
 
 
+def _db_mtime(db_path: str) -> float:
+    """Return the latest mtime across db, db-wal and db-shm.
+    SQLite WAL mode writes to db-wal first; the main file's mtime only
+    updates on checkpoint, so watching db alone misses most writes."""
+    latest = 0.0
+    for suffix in ("", "-wal", "-shm"):
+        try:
+            t = os.path.getmtime(db_path + suffix)
+            if t > latest:
+                latest = t
+        except FileNotFoundError:
+            pass
+    return latest
+
+
 class _Watchdog(threading.Thread):
     def __init__(self, db_path: str, resolver: LocalResolver, interval: float = 1.0):
         super().__init__(daemon=True)
         self._db_path = db_path
         self._resolver = resolver
         self._interval = interval
-        try:
-            self._last_mtime = os.path.getmtime(db_path)
-        except FileNotFoundError:
-            self._last_mtime = 0.0
+        self._last_mtime = _db_mtime(db_path)
 
     def run(self):
         while True:
             time.sleep(self._interval)
             try:
-                mtime = os.path.getmtime(self._db_path)
+                mtime = _db_mtime(self._db_path)
                 if mtime != self._last_mtime:
                     self._last_mtime = mtime
                     log.info("DB changed, reloading cache...")
