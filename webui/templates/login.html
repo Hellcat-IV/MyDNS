@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Login — LocalDNS{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-sm-10 col-md-6 col-lg-4">
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <h4 class="text-center mb-4">
+                    <i class="bi bi-hdd-network-fill text-info"></i> LocalDNS
+                </h4>
+                <form method="post" novalidate>
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.username.label(class="form-label fw-semibold") }}
+                        {{ form.username(
+                            class="form-control" + (" is-invalid" if form.username.errors else ""),
+                            autofocus=true, autocomplete="username"
+                        ) }}
+                        {% for err in form.username.errors %}
+                        <div class="invalid-feedback">{{ err }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-4">
+                        {{ form.password.label(class="form-label fw-semibold") }}
+                        {{ form.password(
+                            class="form-control" + (" is-invalid" if form.password.errors else ""),
+                            autocomplete="current-password"
+                        ) }}
+                        {% for err in form.password.errors %}
+                        <div class="invalid-feedback">{{ err }}</div>
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

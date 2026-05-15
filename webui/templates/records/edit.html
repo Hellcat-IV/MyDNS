@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Edit Record — LocalDNS{% endblock %}
+{% block content %}
+<div class="d-flex align-items-center mb-3 gap-3">
+    <a href="{{ url_for('records_list') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+    <h5 class="mb-0 fw-bold"><i class="bi bi-pencil text-warning"></i> Edit DNS Record</h5>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-4">
+        <form method="post" novalidate>
+            {{ form.hidden_tag() }}
+            {% include "records/_form_fields.html" %}
+            <div class="d-flex gap-2 mt-4 pt-2 border-top">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> Update Record
+                </button>
+                <a href="{{ url_for('records_list') }}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

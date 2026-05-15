@@ -1,0 +1,81 @@
+<div class="row g-3">
+    <div class="col-md-7">
+        {{ form.name.label(class="form-label fw-semibold") }}
+        {{ form.name(
+            class="form-control font-mono" + (" is-invalid" if form.name.errors else ""),
+            placeholder="server.home."
+        ) }}
+        <div class="form-text">Full qualified domain name — any TLD supported. Trailing dot optional.</div>
+        {% for err in form.name.errors %}
+        <div class="invalid-feedback d-block">{{ err }}</div>
+        {% endfor %}
+    </div>
+
+    <div class="col-md-2">
+        {{ form.type.label(class="form-label fw-semibold") }}
+        {{ form.type(class="form-select" + (" is-invalid" if form.type.errors else ""), id="record-type") }}
+        {% for err in form.type.errors %}
+        <div class="invalid-feedback">{{ err }}</div>
+        {% endfor %}
+    </div>
+
+    <div class="col-md-3">
+        {{ form.ttl.label(class="form-label fw-semibold") }}
+        <div class="input-group">
+            {{ form.ttl(class="form-control" + (" is-invalid" if form.ttl.errors else "")) }}
+            <span class="input-group-text">s</span>
+        </div>
+        {% for err in form.ttl.errors %}
+        <div class="invalid-feedback d-block">{{ err }}</div>
+        {% endfor %}
+    </div>
+
+    <div class="col-12">
+        {{ form.value.label(class="form-label fw-semibold") }}
+        {{ form.value(
+            class="form-control font-mono" + (" is-invalid" if form.value.errors else ""),
+            id="record-value", placeholder="192.168.1.10"
+        ) }}
+        <div class="form-text" id="value-hint">IPv4 address.</div>
+        {% for err in form.value.errors %}
+        <div class="invalid-feedback d-block">{{ err }}</div>
+        {% endfor %}
+    </div>
+
+    <div class="col-md-3" id="priority-wrap">
+        {{ form.priority.label(class="form-label fw-semibold") }}
+        {{ form.priority(class="form-control" + (" is-invalid" if form.priority.errors else "")) }}
+        {% for err in form.priority.errors %}
+        <div class="invalid-feedback">{{ err }}</div>
+        {% endfor %}
+    </div>
+
+    <div class="col-md-3 d-flex align-items-end pb-1">
+        <div class="form-check">
+            {{ form.enabled(class="form-check-input") }}
+            {{ form.enabled.label(class="form-check-label fw-semibold") }}
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var HINTS = {
+        A:    ["IPv4 address",       "192.168.1.10"],
+        AAAA: ["IPv6 address",       "fd00::1"],
+        CNAME:["Target hostname",    "server.home."],
+        MX:   ["Mail server hostname","mail.home."],
+        TXT:  ["Text value (≤255)",  "v=spf1 -all"],
+        PTR:  ["Target hostname",    "web.home."],
+    };
+    function update() {
+        var t = document.getElementById("record-type").value;
+        var h = HINTS[t] || ["Value", ""];
+        document.getElementById("value-hint").textContent = h[0];
+        document.getElementById("record-value").placeholder = h[1];
+        document.getElementById("priority-wrap").style.display = (t === "MX") ? "" : "none";
+    }
+    document.getElementById("record-type").addEventListener("change", update);
+    update();
+})();
+</script>

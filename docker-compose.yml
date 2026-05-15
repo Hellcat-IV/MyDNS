@@ -1,0 +1,29 @@
+services:
+  dns:
+    build: ./dns
+    image: localdns-dns
+    container_name: localdns-dns
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:53:53/udp"
+      - "0.0.0.0:53:53/tcp"
+    volumes:
+      - ./data:/data
+    environment:
+      - DB_PATH=/data/dns.db
+      - UPSTREAM_DNS=1.1.1.1 8.8.8.8
+
+  webui:
+    build: ./webui
+    image: localdns-webui
+    container_name: localdns-webui
+    restart: unless-stopped
+    ports:
+      - "${WEBUI_HOST:-127.0.0.1}:${WEBUI_PORT:-5380}:5380"
+    volumes:
+      - ./data:/data
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - DB_PATH=/data/dns.db
+    depends_on:
+      - dns
